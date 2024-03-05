@@ -75,7 +75,10 @@ public class TokenProvider implements InitializingBean {
         return jwtBuilder
                 // 加入ID确保生成的 Token 都不一致
                 .setId(IdUtil.simpleUUID())
+                //这个就是自定义的，是把用户的名称也添加到JWT里面了。取的时候是每次验证去拼接Redis的Key，
+                // 去Redis查找，看看是否有权限
                 .claim(AUTHORITIES_KEY, authentication.getName())
+                //额外的key，但是这个是jwt自带的。
                 .setSubject(authentication.getName())
                 .compact();
     }
@@ -129,7 +132,11 @@ public class TokenProvider implements InitializingBean {
      * @return key
      */
     public String loginKey(String token) {
+        //这就是一个map,jti，user，sub,
+        //.setId(IdUtil.simpleUUID())这个就是jti
+        //.setSubject(authentication.getName())
         Claims claims = getClaims(token);
+        //把这个token也加一下密，
         String md5Token = DigestUtil.md5Hex(token);
         return properties.getOnlineKey() + claims.getSubject() + "-" + md5Token;
     }

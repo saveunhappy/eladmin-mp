@@ -60,6 +60,7 @@ public class UserCacheManager {
      */
     @Async
     public void addUserCache(String userName, JwtUserDto user) {
+        //初次进入这里，放到Redis里面去，key是用户名,value是对象。
         if (StringUtils.isNotEmpty(userName)) {
             // 添加数据, 避免数据同时过期
             long time = idleTime + RandomUtil.randomInt(900, 1800);

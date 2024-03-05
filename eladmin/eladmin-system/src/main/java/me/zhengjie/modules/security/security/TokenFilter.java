@@ -70,6 +70,8 @@ public class TokenFilter extends GenericFilterBean {
             OnlineUserDto onlineUserDto = null;
             boolean cleanUserCache = false;
             try {
+                //传过去的是JWT的token，经过这个loginKey方法，里面去解析JWT的token，
+                // 就转换成了Redis的key，去查询
                 String loginKey = tokenProvider.loginKey(token);
                 onlineUserDto = onlineUserService.getOne(loginKey);
             } catch (ExpiredJwtException e) {
@@ -81,7 +83,9 @@ public class TokenFilter extends GenericFilterBean {
                 }
             }
             if (onlineUserDto != null && StringUtils.hasText(token)) {
+                //创建一个User对象，是SpringSecurity的User对象，Subject和User目前都是用户名，最终返回UsernamePasswordAuthenticationToken
                 Authentication authentication = tokenProvider.getAuthentication(token);
+                //放到上下文中
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 // Token 续期
                 tokenProvider.checkRenewal(token);

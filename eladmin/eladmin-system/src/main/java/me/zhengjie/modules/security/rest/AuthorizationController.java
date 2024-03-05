@@ -88,8 +88,27 @@ public class AuthorizationController {
         if (StringUtils.isBlank(authUser.getCode()) || !authUser.getCode().equalsIgnoreCase(code)) {
             throw new BadRequestException("验证码错误");
         }
+        //UsernamePasswordAuthenticationFilter默认就是要去使用
+        // UsernamePasswordAuthenticationToken这个作为Authorization
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(authUser.getUsername(), password);
+        //		UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(principal,
+        //				authentication.getCredentials(), this.authoritiesMapper.mapAuthorities(user.getAuthorities()));
+        //		result.setDetails(authentication.getDetails());
+        //		this.logger.debug("Authenticated user");
+        //		return result;
+        //这个UsernamePasswordAuthenticationToken就是把用户名密码给封装进去了，
+        // 然后去调用loadUserByUsername去查询，authorize就是验证是否有这个用户
+        //这个去authenticateUsernamePasswordAuthenticationToken就会去找对应的
+        // Provider，然后去找对应的UsernamePasswordAuthenticationToken，
+        // 然后从这个里面去获取用户名，然后调用loadUserByUserName,从数据库中去查询，
+        // 放到Redis中去。
+        // 怎么去匹配账号密码的？把原始的密码去加密，然后和数据库的去对比
+        //		if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
+        //			this.logger.debug("Failed to authenticate since password does not match stored value");
+        //			throw new BadCredentialsException(this.messages
+        //					.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+        //		}
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // 生成令牌与第三方系统获取令牌方式
@@ -124,6 +143,8 @@ public class AuthorizationController {
     public ResponseEntity<Object> getCode() {
         // 获取运算的结果
         Captcha captcha = loginProperties.getCaptcha();
+        //captcha-code:5a8eaa06b8984adcaaf02de18a452cef，
+        //加个RedisKey的前缀前缀，
         String uuid = properties.getCodeKey() + IdUtil.simpleUUID();
         //当验证码类型为 arithmetic时且长度 >= 2 时，captcha.text()的结果有几率为浮点型
         String captchaValue = captcha.text();
