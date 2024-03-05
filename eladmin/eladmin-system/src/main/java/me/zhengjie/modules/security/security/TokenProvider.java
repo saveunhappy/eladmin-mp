@@ -92,6 +92,7 @@ public class TokenProvider implements InitializingBean {
     Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
         User principal = new User(claims.getSubject(), "******", new ArrayList<>());
+        //原来框架自己处理也是把密码设置成空，这里是设置成*了。
         return new UsernamePasswordAuthenticationToken(principal, token, new ArrayList<>());
     }
 

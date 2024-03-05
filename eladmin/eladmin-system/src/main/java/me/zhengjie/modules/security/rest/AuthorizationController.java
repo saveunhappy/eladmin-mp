@@ -109,7 +109,25 @@ public class AuthorizationController {
         //			throw new BadCredentialsException(this.messages
         //					.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         //		}
+        //清除掉密码
+        //if (result != null) {
+        //			if (this.eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
+        //				// Authentication is complete. Remove credentials and other secret data
+        //				// from authentication
+        //				((CredentialsContainer) result).eraseCredentials();
+        //			}
+        //			// If the parent AuthenticationManager was attempted and successful then it
+        //			// will publish an AuthenticationSuccessEvent
+        //			// This check prevents a duplicate AuthenticationSuccessEvent if the parent
+        //			// AuthenticationManager already published it
+        //			if (parentResult == null) {
+        //				this.eventPublisher.publishAuthenticationSuccess(result);
+        //			}
+        //
+        //			return result;
+        //		}
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        //放到上下文中去
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // 生成令牌与第三方系统获取令牌方式
         // UserDetails userDetails = userDetailsService.loadUserByUsername(userInfo.getUsername());
