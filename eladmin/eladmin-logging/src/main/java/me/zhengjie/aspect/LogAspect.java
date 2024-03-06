@@ -43,7 +43,8 @@ public class LogAspect {
     private final SysLogService sysLogService;
 
     ThreadLocal<Long> currentTime = new ThreadLocal<>();
-
+    //在Spring中，只有一个构造函数，字段是final的，那么就可以自动注入
+    //不用加@Autowired注解
     public LogAspect(SysLogService sysLogService) {
         this.sysLogService = sysLogService;
     }
